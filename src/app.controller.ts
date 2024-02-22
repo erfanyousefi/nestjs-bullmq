@@ -1,5 +1,15 @@
-import {Controller, Get, Post} from "@nestjs/common";
+import {
+  Controller,
+  Get,
+  Post,
+  UploadedFile,
+  UseInterceptors,
+} from "@nestjs/common";
 import {AppService} from "./app.service";
+import {FileInterceptor} from "@nestjs/platform-express";
+import {Request} from "express";
+import {Multer, diskStorage} from "multer";
+import {extname} from "path";
 
 @Controller()
 export class AppController {
@@ -12,5 +22,21 @@ export class AppController {
   @Post("/transcode")
   async transcode() {
     await this.appService.transcode();
+  }
+  @Post("/upload-file")
+  @UseInterceptors(
+    FileInterceptor("csv", {
+      storage: diskStorage({
+        destination: "./csv",
+        filename: (req: Request, file: Express.Multer.File, callback) => {
+          const filename = Date.now();
+          const ext = extname(file.originalname);
+          callback(null, `${filename}.${ext}`);
+        },
+      }),
+    })
+  )
+  async uploadFile(@UploadedFile() file: Express.Multer.File) {
+    await this.appService.uploadFile(file);
   }
 }
