@@ -23,16 +23,21 @@ export class AppService {
       }
     );
   }
-  async uploadFile(file: Express.Multer.File) {
-    return await this.transcodeQueue.add(
-      "uploader",
-      {
-        file,
-      },
-      {
-        removeOnComplete: true,
-      }
-    );
+  uploadFile(file: Express.Multer.File) {
+    this.transcodeQueue
+      .add(
+        "uploader",
+        {
+          file,
+        },
+        {
+          removeOnComplete: true,
+        }
+      )
+      .then(() => {
+        console.log("Done");
+      });
+    return "in-progress";
   }
 }
 

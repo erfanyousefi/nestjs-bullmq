@@ -3,7 +3,7 @@ import {Logger} from "@nestjs/common";
 import {TRANSCODE_NAME} from "./constant";
 import {Job} from "bull";
 import * as csv from "csvtojson";
-import {writeFile, writeFileSync} from "fs";
+import {existsSync, unlinkSync, writeFile, writeFileSync} from "fs";
 @Processor(TRANSCODE_NAME)
 export class TranscodeConsumer {
   private readonly logger: Logger = new Logger(TranscodeConsumer.name);
@@ -26,8 +26,9 @@ export class TranscodeConsumer {
     const data: any = job.data;
     const processed = await csv().fromFile(data.file.path);
     writeFileSync(
-      "./file-" + job.id + ".json",
+      `./json/file-${job.id}.json`,
       JSON.stringify(processed, null, 2)
     );
+    if (existsSync(data.file.path)) unlinkSync(data.file.path);
   }
 }

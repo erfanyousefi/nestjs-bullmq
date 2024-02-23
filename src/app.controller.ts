@@ -36,7 +36,7 @@ export class AppController {
       }),
     })
   )
-  async uploadFile(@UploadedFile() file: Express.Multer.File) {
-    await this.appService.uploadFile(file);
+ uploadFile(@UploadedFile() file: Express.Multer.File) {
+    return this.appService.uploadFile(file);
   }
 }
